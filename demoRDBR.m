@@ -14,8 +14,8 @@ NoiseLevel = 0;
 %%% choose a regression method
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% BSFK (Knot-Free B-Spline)
-% RegressionType = 'BSFK';
-% RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
+RegressionType = 'BSFK';
+RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% SVM (Support Vector Machine)
 %%%%% KernelScale=0.015 works even better. In any case, for unseen data one
@@ -25,8 +25,8 @@ NoiseLevel = 0;
 % RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
 % RegressionType = 'SVM';
 % RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.015,'Standardize',true);
-RegressionType = 'SVM';
-RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
+% RegressionType = 'SVM';
+% RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% GPR (Gaussian Process Regression)
 % RegressionType = 'GPR';
@@ -102,8 +102,8 @@ ns = NoiseLevel*randn(1,N);
 x = (0:N-1)/N;
 t = x;
 amp = 0.006;%0.01
-F1 = 6;
-F2 = 6;
+F1 = 2;
+F2 = 2;
 
 sh1 = @(x) gen_shape(x,5);
 sh2 = @(x) gen_shape(x,2);
