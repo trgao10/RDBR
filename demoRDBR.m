@@ -102,8 +102,8 @@ ns = NoiseLevel*randn(1,N);
 x = (0:N-1)/N;
 t = x;
 amp = 0.006;%0.01
-F1 = 5;
-F2 = 5;
+F1 = 6;
+F2 = 6;
 
 sh1 = @(x) gen_shape(x,5);
 sh2 = @(x) gen_shape(x,2);

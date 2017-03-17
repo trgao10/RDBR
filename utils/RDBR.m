@@ -127,15 +127,6 @@ while numIter<maxIter
         title([opt.RegressionType, ', $N_1=' num2str(F1Est) ', N_2=' num2str(F2Est) '$'],'Interpreter','Latex');
         
         subplot(2,numGroup+1,2*numGroup+2);
-%         delta = rms(1:end-1)-rms(2:end);
-%         pos = find(abs(delta)<1e-4);
-%         if ~isempty(pos)
-%             pos = pos(1);
-%         else
-%             pos = length(rms)-2;
-%         end
-%         pos = min(pos, length(eta))';
-%         plot(eta(1:pos),'bo-');
         mu = log(abs(rms(1:end-1)-rms(2:end)));
         eta = mu(1:end-1)-mu(2:end);
         plot(eta,'bo-');
@@ -241,7 +232,7 @@ elseif strcmpi(Type, 'GPR')
     if size(X,1) < size(X,2)
         X = X';
     end
-    sigma0 = Chi2Estimation(Y)/2;
+    sigma0 = Chi2Estimation(Y);
     GPRModel = fitrgp(X,Y,'KernelFunction',RegressionParams.KernelFunction,'Sigma',sigma0);
     shapeRegr = predict(GPRModel, XGrid')';
     YEst = resubPredict(GPRModel)';
