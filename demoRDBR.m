@@ -4,7 +4,7 @@
 close all;clearvars;%clc;
 path(pathdef);
 addpath(path, genpath('./utils'));
-addpath(path, '../data/');
+addpath(path, './data/');
 scrsz = get(groot,'ScreenSize');
 
 num_group = 2;
@@ -14,8 +14,8 @@ NoiseLevel = 0;
 %%% choose a regression method
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% BSFK (Knot-Free B-Spline)
-RegressionType = 'BSFK';
-RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
+% RegressionType = 'BSFK';
+% RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% SVM (Support Vector Machine)
 %%%%% KernelScale=0.015 works even better. In any case, for unseen data one
@@ -25,8 +25,8 @@ RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
 % RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
 % RegressionType = 'SVM';
 % RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.015,'Standardize',true);
-% RegressionType = 'SVM';
-% RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
+RegressionType = 'SVM';
+RegressionOpt = struct('KernelFunction','gaussian','KernelScale',0.02,'Standardize',true);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% GPR (Gaussian Process Regression)
 % RegressionType = 'GPR';
@@ -102,8 +102,8 @@ ns = NoiseLevel*randn(1,N);
 x = (0:N-1)/N;
 t = x;
 amp = 0.006;%0.01
-F1 = 3;
-F2 = 3;
+F1 = 5;
+F2 = 5;
 
 sh1 = @(x) gen_shape(x,5);
 sh2 = @(x) gen_shape(x,2);
@@ -218,44 +218,44 @@ end
 % set(fig,fig_opts);axis tight
 % xlabel('Time (Second)');title('A superposition of general modes');
 
-% %%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure('Position',scrsz);
-% for j=1:num_group
-%     [trans_est_shape,min_error] = shape_phase_trans(shape{j}.',shapeTrue{j}(linspace(0,1,1000)));
-%     L = length(trans_est_shape);
-%     gd = 0:1/L:(1-1/L);
-%     
-%     subplot(1,num_group,j);
-%     plot(gd,trans_est_shape);
-%     hold on;
-%     plot(gd,shapeTrue{j}(linspace(0,1,1000)));
-%     hold off;
-%     legend('Est','True');
-%     title(sprintf('Shape %d, Residue = %.4f', j, min_error),'Interpreter','latex');
-%     axis square;
-%     set(gca, 'FontSize', 16);
-%     b=get(gca);
-%     set(b.XLabel, 'FontSize', 16);
-%     set(b.YLabel, 'FontSize', 16);
-%     set(b.ZLabel, 'FontSize', 16);
-%     set(b.Title, 'FontSize', 16);
-% end
-% 
-% [~,h] = suplabel(RegressionType,'t');
-% set(h,'FontSize',30,'Interpreter','Latex');
-% 
-% savefig([RegressionType, '_N=' num2str(F1) '_shapes.fig']);
-% % close all;
-% 
-% %%
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure;
-% 
-% subplot(1,2,1);
-% plot(rms);
-% 
-% subplot(1,2,2);
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('Position',scrsz);
+for j=1:num_group
+    [trans_est_shape,min_error] = shape_phase_trans(shape{j}.',shapeTrue{j}(linspace(0,1,1000)));
+    L = length(trans_est_shape);
+    gd = 0:1/L:(1-1/L);
+    
+    subplot(1,num_group,j);
+    plot(gd,trans_est_shape);
+    hold on;
+    plot(gd,shapeTrue{j}(linspace(0,1,1000)));
+    hold off;
+    legend('Est','True');
+    title(sprintf('Shape %d, Residue = %.4f', j, min_error),'Interpreter','latex');
+    axis square;
+    set(gca, 'FontSize', 16);
+    b=get(gca);
+    set(b.XLabel, 'FontSize', 16);
+    set(b.YLabel, 'FontSize', 16);
+    set(b.ZLabel, 'FontSize', 16);
+    set(b.Title, 'FontSize', 16);
+end
+
+[~,h] = suplabel(RegressionType,'t');
+set(h,'FontSize',30,'Interpreter','Latex');
+
+savefig([RegressionType, '_N=' num2str(F1) '_shapes.fig']);
+% close all;
+
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure;
+
+subplot(1,2,1);
+plot(rms);
+
+subplot(1,2,2);
 % delta = rms(1:end-1)-rms(2:end);
 % pos = find(abs(delta)<1e-4);
 % if ~isempty(pos)
@@ -263,13 +263,14 @@ end
 % else
 %     pos = length(rms)-2;
 % end
-% mu = log(abs(rms(1:end-1)-rms(2:end)));
-% eta = mu(1:end-1)-mu(2:end);
 % pos = min(pos, length(eta))';
 % plot(eta(1:pos),'bo-');
-% xlabel('Number of Iterations $j$','Interpreter','Latex');
-% ylabel('$\eta_j$','Interpreter','Latex');
-% title([RegressionType, ', $N=' num2str(F1) '$'],'Interpreter','Latex');
-% 
-% savefig([RegressionType, '_N=' num2str(F1) '_rms.fig']);
-% % close all;
+mu = log(abs(rms(1:end-1)-rms(2:end)));
+eta = mu(1:end-1)-mu(2:end);
+plot(eta,'bo-');
+xlabel('Number of Iterations $j$','Interpreter','Latex');
+ylabel('$\eta_j$','Interpreter','Latex');
+title([RegressionType, ', $N=' num2str(F1) '$'],'Interpreter','Latex');
+
+savefig([RegressionType, '_N=' num2str(F1) '_rms.fig']);
+% close all;
