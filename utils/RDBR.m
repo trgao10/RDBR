@@ -86,7 +86,9 @@ while numIter<maxIter
 
         shapeOffset = mean(shapeInLoop);
         shapeInLoop = shapeInLoop - shapeOffset;
-        compoInLoop = (YEst-shapeOffset).*insAmplitude(cntGroup,:);
+        %%% Can we use a different shapeOffset for component estimation?
+        compoInLoop = (YEst-mean(YEst)).*insAmplitude(cntGroup,:);
+%         compoInLoop = (YEst-shapeOffset).*insAmplitude(cntGroup,:);
                 
         if numIter == 1
             shapes{cntGroup} = shapeInLoop;
@@ -143,9 +145,9 @@ while numIter<maxIter
         break;
     end
     
-    if strcmpi(RegressionParams.Type,'SVM') && (errReg>errRegPrev)
-        RegressionParams.Standardize = false;
-    end
+%     if strcmpi(RegressionParams.Type,'SVM') && (errReg>errRegPrev)
+%         RegressionParams.Standardize = false;
+%     end
 end
 
 savefig(['results/' opt.RegressionType, '_N1=' num2str(F1Est) '_N2=' num2str(F2Est) '_' currTimeStamp '.fig']);
