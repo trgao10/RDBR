@@ -14,8 +14,8 @@ NoiseLevel = 0;
 %%% choose a regression method
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% BSFK (Knot-Free B-Spline)
-% RegressionType = 'BSFK';
-% RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
+RegressionType = 'BSFK';
+RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% SVM (Support Vector Machine)
 %%%%% KernelScale=0.015 works even better. In any case, for unseen data one
@@ -37,8 +37,8 @@ NoiseLevel = 0;
 % RegressionOpt = struct('tol', 1e-8, 'order', 3, 'Bandwidth',0.014);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% NW (Nadaraya-Watson Local Linear Regression)
-RegressionType = 'NW';
-RegressionOpt = struct('KNN',23);
+% RegressionType = 'NW';
+% RegressionOpt = struct('KNN',23);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% PB (Partition-Based Regression, or Nadaraya-Watson with square kernel)
 % RegressionType = 'PB';
@@ -54,10 +54,10 @@ ns = NoiseLevel*randn(1,N);
 x = (0:N-1)/N;
 t = x;
 amp = 0.006;%0.01
-F1 = 2;
-F2 = 2;
-% F1 = 150;
-% F2 = 220;
+% F1 = 2;
+% F2 = 2;
+F1 = 150;
+F2 = 220;
 
 sh1 = @(x) gen_shape2(x,3);
 sh2 = @(x) gen_shape2(x,2);
@@ -253,7 +253,7 @@ end
 [~,h] = suplabel(RegressionType,'t');
 set(h,'FontSize',30,'Interpreter','Latex');
 
-savefig([RegressionType, '_N=' num2str(F1) '_shapes.fig']);
+savefig([RegressionType, '_N1=' num2str(F1) '_N2=' num2str(F2) '_shapes.fig']);
 % close all;
 
 %%
@@ -280,5 +280,6 @@ xlabel('Number of Iterations $j$','Interpreter','Latex');
 ylabel('$\eta_j$','Interpreter','Latex');
 title([RegressionType, ', $N=' num2str(F1) '$'],'Interpreter','Latex');
 
-savefig([RegressionType, '_N=' num2str(F1) '_rms.fig']);
+savefig([RegressionType, '_N1=' num2str(F1) '_N2=' num2str(F2) '_rms.fig']);
 % close all;
+
