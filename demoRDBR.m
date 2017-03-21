@@ -14,8 +14,8 @@ NoiseLevel = 0;
 %%% choose a regression method
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% BSFK (Knot-Free B-Spline)
-% RegressionType = 'BSFK';
-% RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
+RegressionType = 'BSFK';
+RegressionOpt = struct('nknots',20,'knotremoval_factor',1.01,'order',3);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% SVM (Support Vector Machine)
 %%%%% KernelScale=0.015 works even better. In any case, for unseen data one
@@ -37,8 +37,8 @@ NoiseLevel = 0;
 % RegressionOpt = struct('tol', 1e-8, 'order', 3, 'Bandwidth',0.014);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% NW (Nadaraya-Watson Local Linear Regression)
-RegressionType = 'NW';
-RegressionOpt = struct('KNN',23);
+% RegressionType = 'NW';
+% RegressionOpt = struct('KNN',23);
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %%% PB (Partition-Based Regression, or Nadaraya-Watson with square kernel)
 % RegressionType = 'PB';
@@ -48,56 +48,6 @@ RegressionOpt = struct('KNN',23);
 %%%%% generate shape functions with Gaussian noise %%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Example 1: Fig11.m
-N = 2^12;
-ns = NoiseLevel*randn(1,N);
-
-x = (0:N-1)/N;
-t = x;
-amp = 0.006;%0.01
-F1 = 2;
-F2 = 2;
-% F1 = 150;
-% F2 = 220;
-
-sh1 = @(x) gen_shape2(x,3);
-sh2 = @(x) gen_shape2(x,2);
-
-ins_freq = zeros(num_group,N);
-ins_amplt = zeros(num_group,N);
-ins_pre_phase = zeros(num_group,N);
-
-xx = x + amp*sin(2*pi*x);
-ins_freq(1,:) = (1+amp*2*pi*cos(2*pi*x))*F1;
-ins_amplt(1,:) = 1+0.05*sin(2*pi*x);
-f1 = ins_amplt(1,:).*sh1(F1*xx); %%%%%ECG gen_shape(FF*xx,2)
-
-yy = x + amp*cos(2*pi*x);
-ins_freq(2,:) = (1-amp*2*pi*sin(2*pi*x))*F2;
-ins_amplt(2,:) = 1+0.05*cos(2*pi*x);
-f2 = ins_amplt(2,:).*sh2(F2*yy);
-
-ins_pre_phase(1,:) = (xx)*F1;
-ins_pre_phase(2,:) = (yy)*F2;
-
-%%% only for validation purposes, not used in the RDBR algorithm
-fTrue = {f1,f2};
-shapeTrue = cell(1,2);
-shapeTrue{1} = @(x) sh1(x);
-shapeTrue{2} = @(x) sh2(x);
-
-% %%% test permuting f1 and f2
-% ins_pre_phase = ins_pre_phase(2:-1:1,:);
-% ins_amplt = ins_amplt(end:-1:1,:);
-% ins_freq = ins_freq(end:-1:1);
-% shapeTrue = shapeTrue(end:-1:1);
-% tf = f1;
-% f1 = f2;
-% f2 = tf;
-
-fff = f1 + f2  + ns;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% Example 2: Fig10.m (Low Number of Periods)
 % N = 2^12;
 % ns = NoiseLevel*randn(1,N);
 % 
@@ -106,9 +56,11 @@ fff = f1 + f2  + ns;
 % amp = 0.006;%0.01
 % F1 = 2;
 % F2 = 2;
+% % F1 = 150;
+% % F2 = 220;
 % 
-% sh1 = @(x) gen_shape(x,5);
-% sh2 = @(x) gen_shape(x,2);
+% sh1 = @(x) gen_shape2(x,3);
+% sh2 = @(x) gen_shape2(x,2);
 % 
 % ins_freq = zeros(num_group,N);
 % ins_amplt = zeros(num_group,N);
@@ -122,10 +74,10 @@ fff = f1 + f2  + ns;
 % yy = x + amp*cos(2*pi*x);
 % ins_freq(2,:) = (1-amp*2*pi*sin(2*pi*x))*F2;
 % ins_amplt(2,:) = 1+0.05*cos(2*pi*x);
-% f2 = ins_amplt(2,:).*sh2(F2*yy); %%%%%%
+% f2 = ins_amplt(2,:).*sh2(F2*yy);
 % 
-% ins_pre_phase(1,:) = xx*F1;
-% ins_pre_phase(2,:) = yy*F2;
+% ins_pre_phase(1,:) = (xx)*F1;
+% ins_pre_phase(2,:) = (yy)*F2;
 % 
 % %%% only for validation purposes, not used in the RDBR algorithm
 % fTrue = {f1,f2};
@@ -133,7 +85,55 @@ fff = f1 + f2  + ns;
 % shapeTrue{1} = @(x) sh1(x);
 % shapeTrue{2} = @(x) sh2(x);
 % 
+% % %%% test permuting f1 and f2
+% % ins_pre_phase = ins_pre_phase(2:-1:1,:);
+% % ins_amplt = ins_amplt(end:-1:1,:);
+% % ins_freq = ins_freq(end:-1:1);
+% % shapeTrue = shapeTrue(end:-1:1);
+% % tf = f1;
+% % f1 = f2;
+% % f2 = tf;
+% 
 % fff = f1 + f2  + ns;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Example 2: Fig10.m (Low Number of Periods)
+N = 2^12;
+ns = NoiseLevel*randn(1,N);
+
+x = (0:N-1)/N;
+t = x;
+amp = 0.006;%0.01
+F1 = 2;
+F2 = 2;
+
+sh1 = @(x) gen_shape(x,5);
+sh2 = @(x) gen_shape(x,2);
+
+ins_freq = zeros(num_group,N);
+ins_amplt = zeros(num_group,N);
+ins_pre_phase = zeros(num_group,N);
+
+xx = x + amp*sin(2*pi*x);
+ins_freq(1,:) = (1+amp*2*pi*cos(2*pi*x))*F1;
+ins_amplt(1,:) = 1+0.05*sin(2*pi*x);
+f1 = ins_amplt(1,:).*sh1(F1*xx); %%%%%ECG gen_shape(FF*xx,2)
+
+yy = x + amp*cos(2*pi*x);
+ins_freq(2,:) = (1-amp*2*pi*sin(2*pi*x))*F2;
+ins_amplt(2,:) = 1+0.05*cos(2*pi*x);
+f2 = ins_amplt(2,:).*sh2(F2*yy); %%%%%%
+
+ins_pre_phase(1,:) = xx*F1;
+ins_pre_phase(2,:) = yy*F2;
+
+%%% only for validation purposes, not used in the RDBR algorithm
+fTrue = {f1,f2};
+shapeTrue = cell(1,2);
+shapeTrue{1} = @(x) sh1(x);
+shapeTrue{2} = @(x) sh2(x);
+
+fff = f1 + f2  + ns;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Example 3: Fig6.m
@@ -253,7 +253,7 @@ end
 [~,h] = suplabel(RegressionType,'t');
 set(h,'FontSize',30,'Interpreter','Latex');
 
-savefig([RegressionType, '_N=' num2str(F1) '_shapes.fig']);
+savefig(['results/' RegressionType, '_N=' num2str(F1) '_shapes.fig']);
 % close all;
 
 %%
@@ -280,5 +280,5 @@ xlabel('Number of Iterations $j$','Interpreter','Latex');
 ylabel('$\eta_j$','Interpreter','Latex');
 title([RegressionType, ', $N=' num2str(F1) '$'],'Interpreter','Latex');
 
-savefig([RegressionType, '_N=' num2str(F1) '_rms.fig']);
+savefig(['results/' RegressionType, '_N=' num2str(F1) '_rms.fig']);
 % close all;
